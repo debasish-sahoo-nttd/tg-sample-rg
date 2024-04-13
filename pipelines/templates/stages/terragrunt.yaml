@@ -39,14 +39,16 @@ stages:
                     echo "Checking for Terragrunt"
                     terragrunt -version
               - task: AzureCLI@2
-                displayName: Terragrunt Init and Plan
+                displayName: 'Terragrunt Init and Plan - ${{deployEnv.environment}}'
                 inputs:
                   azureSubscription: ${{parameters.subscription}}
                   scriptType: 'bash'
                   scriptLocation: 'inlineScript'
                   inlineScript: |
                     set -x
-                    cd ${{parameters.deployEnv.terragruntPath}}
+                    echo "Present Working directory: $(pwd)"
+                    echo "Terragrunt Path: ${{parameters.deployEnv.terragruntPath}}"
+                    cd "${{parameters.deployEnv.terragruntPath}}"
                     echo -e "Listing files \n"
                     ls
                     echo "Running Terragrunt Init"
@@ -54,7 +56,7 @@ stages:
                     echo "Running Terragrunt Plan"
                     terragrunt plan
           - deployment: 'Deploy_${{deployEnv.environment}}'
-            displayName: 'Deploy App - ${{deployEnv.environment}}'
+            displayName: 'Terragrunt Apply - ${{deployEnv.environment}}'
             dependsOn:
             - ${{ deployEnv.environment }}_TerraformInitPlan
             pool: ${{ parameters.pool }}
