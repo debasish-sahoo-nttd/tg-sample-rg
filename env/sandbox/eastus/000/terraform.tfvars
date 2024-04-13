@@ -1,5 +1,5 @@
 name = "govt-k8s-rg-000"
-location="useast"
+location="eastus"
 tags = {
   environment = "sandbox"
   owner       = "Launch-DSO"
