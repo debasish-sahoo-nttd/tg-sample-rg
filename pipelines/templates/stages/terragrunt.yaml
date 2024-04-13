@@ -14,8 +14,8 @@ parameters:
 
 stages:
   - ${{ each deployEnv in parameters.deployEnvironments }}:
-      - stage: deploy_webapp_${{deployEnv.environment}}
-        displayName: '${{deployEnv.environment}}: Deploy web-app'
+      - stage: terragrunt_${{deployEnv.environment}}
+        displayName: 'Terragrunt Provisioning - ${{deployEnv.environment}}'
         dependsOn: ${{deployEnv.dependsOn}}
         jobs:
           - job: ${{ deployEnv }}_TerraformInitPlan
