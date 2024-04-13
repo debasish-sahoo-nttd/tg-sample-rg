@@ -47,8 +47,8 @@ stages:
                   inlineScript: |
                     set -x
                     echo "Present Working directory: $(pwd)"
-                    echo "Terragrunt Path: ${{parameters.deployEnv.terragruntPath}}"
-                    cd "${{parameters.deployEnv.terragruntPath}}"
+                    echo "Terragrunt Path: ${{ deployEnv.terragruntPath }}"
+                    cd "${{ deployEnv.terragruntPath }}"
                     echo -e "Listing files \n"
                     ls
                     echo "Running Terragrunt Init"
@@ -60,7 +60,7 @@ stages:
             dependsOn:
             - ${{ deployEnv.environment }}_TerraformInitPlan
             pool: ${{ parameters.pool }}
-            environment: ${{deployEnv.azureEnvironment}}
+            environment: ${{ deployEnv.azureEnvironment }}
             strategy:
               runOnce:
                 deploy:
@@ -76,6 +76,6 @@ stages:
                           echo "Present Working directory: $(pwd)"
                           echo "ASDF Install"
                           asdf install
-                          cd ${{parameters.deployEnv.terragruntPath}}
+                          cd ${{ deployEnv.terragruntPath }}
                           echo "Running Terragrunt Apply"
                           terragrunt apply -auto-approve
