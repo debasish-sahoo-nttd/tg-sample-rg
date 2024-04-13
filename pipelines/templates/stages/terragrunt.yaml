@@ -19,7 +19,7 @@ stages:
         dependsOn: ${{deployEnv.dependsOn}}
         jobs:
           - job: ${{ deployEnv.environment }}_TerraformInitPlan
-            displayName: 'Terraform Init and Plan'
+            displayName: 'Terraform Init and Plan - ${{deployEnv.environment}}'
             pool: ${{ parameters.pool }}
             workspace:
               clean: all
@@ -31,8 +31,6 @@ stages:
                   script: |
                     set -x
                     echo "Present Working directory: $(pwd)"
-                    echo "Listing files"
-                    ls
                     echo "Installing ASDF"
                     asdf install
                     type terragrunt || exit 1
@@ -40,7 +38,7 @@ stages:
                     echo "Checking for Terragrunt"
                     terragrunt -version
               - task: AzureCLI@2
-                displayName: 'Terragrunt Init and Plan - ${{deployEnv.environment}}'
+                displayName: 'Terragrunt Init and Plan'
                 inputs:
                   azureSubscription: ${{parameters.subscription}}
                   scriptType: 'bash'
@@ -48,16 +46,12 @@ stages:
                   addSpnToEnvironment: true
                   inlineScript: |
                     set -x
-                    env
                     export ARM_CLIENT_ID=$servicePrincipalId
                     export ARM_CLIENT_SECRET=$servicePrincipalKey
                     export ARM_TENANT_ID=$tenantId
                     export ARM_SUBSCRIPTION_ID=$(az account show | jq -r ".id")
                     echo "Present Working directory: $(pwd)"
-                    echo "Terragrunt Path: ${{ deployEnv.terragruntPath }}"
                     cd "${{ deployEnv.terragruntPath }}"
-                    echo -e "Listing files \n"
-                    ls
                     echo "Running Terragrunt Init"
                     terragrunt init 
                     echo "Running Terragrunt Plan"
