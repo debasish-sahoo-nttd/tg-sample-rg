@@ -18,7 +18,7 @@ stages:
         displayName: 'Terragrunt Provisioning - ${{deployEnv.environment}}'
         dependsOn: ${{deployEnv.dependsOn}}
         jobs:
-          - job: ${{ deployEnv }}_TerraformInitPlan
+          - job: ${{ deployEnv.environment }}_TerraformInitPlan
             displayName: 'Terraform Init and Plan'
             pool: ${{ parameters.pool }}
             workspace:
