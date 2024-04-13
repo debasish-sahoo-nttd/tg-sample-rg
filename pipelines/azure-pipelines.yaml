@@ -1,0 +1,13 @@
+trigger: none
+
+pool: 'container-pool'
+
+stages:
+  - template: ./templates/stages/terragrunt.yaml
+    parameters:
+      deployEnvironments:
+        - environment: sandbox
+          azureEnvironment: tg-rg-sandbox
+          terragruntPath: 'env/sandbox/eastus/000'
+      subscription: ${{ parameters.subscription }}
+      pool: 'container-pool'

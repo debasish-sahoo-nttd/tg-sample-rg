@@ -1,0 +1,69 @@
+parameters:
+- name: deployEnvironments
+  type: object
+  default: []
+- name: userSteps
+  type: stepList
+  default: []
+- name: subscription
+  type: string
+  default: false
+- name: pool
+  type: string
+  default: 'container-pool'
+
+stages:
+  - ${{ each deployEnv in parameters.deployEnvironments }}:
+      - stage: deploy_webapp_${{deployEnv.environment}}
+        displayName: '${{deployEnv.environment}}: Deploy web-app'
+        dependsOn: ${{deployEnv.dependsOn}}
+        jobs:
+          - job: ${{ deployEnv }}_TerraformInitPlan
+            displayName: 'Terraform Init and Plan'
+            pool: ${{ parameters.pool }}
+            workspace:
+              clean: all
+            steps:
+              - task: Bash@3
+                displayName: 'Verify Environment'
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    set -x
+                    type terragrunt || exit 1
+                    echo "Checking for Terragrunt"
+                    terragrunt -version
+              - task: AzureCLI@2
+                displayName: Terragrunt Init and Plan
+                inputs:
+                  azureSubscription: ${{parameters.subscription}}
+                  scriptType: 'bash'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                    set -x
+                    cd ${{parameters.deployEnv.terragruntPath}}
+                    echo -e "Listing files \n"
+                    ls
+                    echo "Running Terragrunt Init"
+                    terragrunt init 
+                    echo "Running Terragrunt Plan"
+                    terragrunt plan
+          - deployment: 'Deploy_${{deployEnv.environment}}'
+            displayName: 'Deploy App - ${{deployEnv.environment}}'
+            pool: ${{ parameters.pool }}
+            environment: ${{deployEnv.azureEnvironment}}
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - task: AzureCLI@2
+                      displayName: 'Terraform Apply'
+                      inputs:
+                        azureSubscription: ${{parameters.subscription}}
+                        scriptType: 'bash'
+                        scriptLocation: 'inlineScript'
+                        inlineScript: |
+                          set -x
+                          cd ${{parameters.deployEnv.terragruntPath}}
+                          echo "Running Terragrunt Apply"
+                          terragrunt apply -auto-approve
