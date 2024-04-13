@@ -44,8 +44,14 @@ stages:
                   azureSubscription: ${{parameters.subscription}}
                   scriptType: 'bash'
                   scriptLocation: 'inlineScript'
+                  addSpnToEnvironment: true
                   inlineScript: |
                     set -x
+                    env
+                    export ARM_CLIENT_ID=$servicePrincipalId
+                    export ARM_CLIENT_SECRET=$servicePrincipalKey
+                    export ARM_TENANT_ID=$tenantId
+                    #export ARM_SUBSCRIPTION_ID="20000000-0000-0000-0000-000000000000"
                     echo "Present Working directory: $(pwd)"
                     echo "Terragrunt Path: ${{ deployEnv.terragruntPath }}"
                     cd "${{ deployEnv.terragruntPath }}"
@@ -71,8 +77,13 @@ stages:
                         azureSubscription: ${{parameters.subscription}}
                         scriptType: 'bash'
                         scriptLocation: 'inlineScript'
+                        addSpnToEnvironment: true
                         inlineScript: |
                           set -x
+                          export ARM_CLIENT_ID=$servicePrincipalId
+                          export ARM_CLIENT_SECRET=$servicePrincipalKey
+                          export ARM_TENANT_ID=$tenantId
+                          #export ARM_SUBSCRIPTION_ID="20000000-0000-0000-0000-000000000000"
                           echo "Present Working directory: $(pwd)"
                           echo "ASDF Install"
                           asdf install
