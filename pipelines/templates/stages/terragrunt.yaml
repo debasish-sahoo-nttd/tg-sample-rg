@@ -30,6 +30,11 @@ stages:
                   targetType: 'inline'
                   script: |
                     set -x
+                    echo "Present Working directory: $(pwd)"
+                    echo "Listing files"
+                    ls
+                    echo "Installing ASDF"
+                    asdf install
                     type terragrunt || exit 1
                     echo "Checking for Terragrunt"
                     terragrunt -version
@@ -50,6 +55,8 @@ stages:
                     terragrunt plan
           - deployment: 'Deploy_${{deployEnv.environment}}'
             displayName: 'Deploy App - ${{deployEnv.environment}}'
+            dependsOn:
+            - ${{ deployEnv.environment }}_TerraformInitPlan
             pool: ${{ parameters.pool }}
             environment: ${{deployEnv.azureEnvironment}}
             strategy:
@@ -64,6 +71,9 @@ stages:
                         scriptLocation: 'inlineScript'
                         inlineScript: |
                           set -x
+                          echo "Present Working directory: $(pwd)"
+                          echo "ASDF Install"
+                          asdf install
                           cd ${{parameters.deployEnv.terragruntPath}}
                           echo "Running Terragrunt Apply"
                           terragrunt apply -auto-approve
