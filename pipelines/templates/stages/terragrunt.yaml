@@ -14,12 +14,12 @@ parameters:
 
 stages:
   - ${{ each deployEnv in parameters.deployEnvironments }}:
-      - stage: terragrunt_${{deployEnv.environment}}
-        displayName: 'Terragrunt Provisioning - ${{deployEnv.environment}}'
+      - stage: ${{deployEnv.environment}}_pre_deploy
+        displayName: '${{deployEnv.environment}} - Pre Deploy'
         dependsOn: ${{deployEnv.dependsOn}}
         jobs:
           - job: ${{ deployEnv.environment }}_TerraformInitPlan
-            displayName: 'Terraform Init and Plan - ${{deployEnv.environment}}'
+            displayName: '${{deployEnv.environment}} - Terraform Init and Plan'
             pool: ${{ parameters.pool }}
             workspace:
               clean: all
@@ -30,11 +30,12 @@ stages:
                   targetType: 'inline'
                   script: |
                     set -x
+                    type terragrunt || exit 1
+                    type jq || exit 1
+                    type asdf || exit 1
                     echo "Present Working directory: $(pwd)"
                     echo "Installing ASDF"
                     asdf install
-                    type terragrunt || exit 1
-                    type jq || exit 1
                     echo "Checking for Terragrunt"
                     terragrunt -version
               - task: AzureCLI@2
@@ -56,10 +57,14 @@ stages:
                     terragrunt init 
                     echo "Running Terragrunt Plan"
                     terragrunt plan
-          - deployment: 'Deploy_${{deployEnv.environment}}'
-            displayName: 'Terragrunt Apply - ${{deployEnv.environment}}'
-            dependsOn:
-            - ${{ deployEnv.environment }}_TerraformInitPlan
+      - stage: ${{deployEnv.environment}}_deploy
+        displayName: '${{deployEnv.environment}} - Deploy'
+        dependsOn: ${{deployEnv.environment}}_pre_deploy
+        jobs:
+          - deployment: '${{deployEnv.environment}}_deploy'
+            displayName: '${{deployEnv.environment}} - Terragrunt Apply'
+#            dependsOn:
+#            - ${{ deployEnv.environment }}_TerraformInitPlan
             pool: ${{ parameters.pool }}
             environment: ${{ deployEnv.azureEnvironment }}
             strategy:
@@ -84,4 +89,5 @@ stages:
                           asdf install
                           cd ${{ deployEnv.terragruntPath }}
                           echo "Running Terragrunt Apply"
+                          terragrunt init
                           terragrunt apply -auto-approve

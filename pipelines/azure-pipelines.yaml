@@ -18,6 +18,6 @@ stages:
           azureEnvironment: tg-rg-qa
           terragruntPath: 'env/qa/eastus/000'
           dependsOn:
-            - terragrunt_sandbox
+            - sandbox_deploy
       subscription: ${{ parameters.serviceConnection }}
       pool: 'container-pool'
