@@ -15,6 +15,10 @@ stages:
           region: eastus
           environmentNumber: "000"
           azureEnvironment: tg-rg-sandbox-eastus-000
+        - environment: sandbox
+          region: eastus
+          environmentNumber: "001"
+          azureEnvironment: tg-rg-sandbox-eastus-001
         - environment: qa
           region: eastus
           environmentNumber: "000"
