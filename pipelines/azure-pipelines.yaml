@@ -25,5 +25,6 @@ stages:
           azureEnvironment: tg-rg-qa-eastus-000
           dependsOn:
             - sandbox_eastus_000_deploy
+            - sandbox_eastus_001_deploy
       subscription: ${{ parameters.serviceConnection }}
       pool: 'container-pool'
