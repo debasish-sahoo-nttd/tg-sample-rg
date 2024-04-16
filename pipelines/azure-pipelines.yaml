@@ -13,11 +13,11 @@ stages:
       deployEnvironments:
         - environment: sandbox
           region: eastus
-          environmentNumber: 000
+          environmentNumber: "000"
           azureEnvironment: tg-rg-sandbox-eastus-000
         - environment: qa
           region: eastus
-          environmentNumber: 000
+          environmentNumber: "000"
           azureEnvironment: tg-rg-qa-eastus-000
           dependsOn:
             - sandbox_eastus_000_deploy
