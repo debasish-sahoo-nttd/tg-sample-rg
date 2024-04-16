@@ -59,12 +59,10 @@ stages:
                     terragrunt plan
       - stage: ${{deployEnv.environment}}_${{ deployEnv.region }}_${{ deployEnv.environmentNumber}}_deploy
         displayName: '${{deployEnv.environment}} ${{ deployEnv.region }} ${{ deployEnv.environmentNumber}} - Deploy'
-        dependsOn: ${{deployEnv.environment}}_pre_deploy
+        dependsOn: ${{deployEnv.environment}}_${{ deployEnv.region }}_${{ deployEnv.environmentNumber}}_pre_deploy
         jobs:
-          - deployment: '${{deployEnv.environment}}_deploy'
+          - deployment: '${{deployEnv.environment}}_${{ deployEnv.region }}_${{ deployEnv.environmentNumber}}_deploy'
             displayName: '${{deployEnv.environment}} ${{ deployEnv.region }} ${{ deployEnv.environmentNumber}} - Terragrunt Apply'
-#            dependsOn:
-#            - ${{ deployEnv.environment }}_TerraformInitPlan
             pool: ${{ parameters.pool }}
             environment: ${{ deployEnv.azureEnvironment }}
             strategy:
