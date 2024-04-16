@@ -14,12 +14,12 @@ parameters:
 
 stages:
   - ${{ each deployEnv in parameters.deployEnvironments }}:
-      - stage: ${{deployEnv.environment}}_pre_deploy
-        displayName: '${{deployEnv.environment}} - Pre Deploy'
+      - stage: ${{deployEnv.environment}}_${{ deployEnv.region }}_${{ deployEnv.environmentNumber}}_pre_deploy
+        displayName: '${{deployEnv.environment}} ${{ deployEnv.region }} ${{ deployEnv.environmentNumber}} - Pre Deploy'
         dependsOn: ${{deployEnv.dependsOn}}
         jobs:
           - job: ${{ deployEnv.environment }}_TerraformInitPlan
-            displayName: '${{deployEnv.environment}} - Terraform Init and Plan'
+            displayName: '${{deployEnv.environment}} ${{ deployEnv.region }} ${{ deployEnv.environmentNumber}} - Terraform Init and Plan'
             pool: ${{ parameters.pool }}
             workspace:
               clean: all
@@ -33,7 +33,7 @@ stages:
                     type terragrunt || exit 1
                     type jq || exit 1
                     type asdf || exit 1
-                    echo "Present Working directory: $(pwd)"
+                    echo "Present Working directory: $(pwd)"  
                     echo "Installing ASDF"
                     asdf install
                     echo "Checking for Terragrunt"
@@ -52,17 +52,17 @@ stages:
                     export ARM_TENANT_ID=$tenantId
                     export ARM_SUBSCRIPTION_ID=$(az account show | jq -r ".id")
                     echo "Present Working directory: $(pwd)"
-                    cd "${{ deployEnv.terragruntPath }}"
+                    cd "env/${{deployEnv.environment}}/${{ deployEnv.region }}/${{ deployEnv.environmentNumber}}"
                     echo "Running Terragrunt Init"
                     terragrunt init 
                     echo "Running Terragrunt Plan"
                     terragrunt plan
-      - stage: ${{deployEnv.environment}}_deploy
-        displayName: '${{deployEnv.environment}} - Deploy'
+      - stage: ${{deployEnv.environment}}_${{ deployEnv.region }}_${{ deployEnv.environmentNumber}}_deploy
+        displayName: '${{deployEnv.environment}} ${{ deployEnv.region }} ${{ deployEnv.environmentNumber}} - Deploy'
         dependsOn: ${{deployEnv.environment}}_pre_deploy
         jobs:
           - deployment: '${{deployEnv.environment}}_deploy'
-            displayName: '${{deployEnv.environment}} - Terragrunt Apply'
+            displayName: '${{deployEnv.environment}} ${{ deployEnv.region }} ${{ deployEnv.environmentNumber}} - Terragrunt Apply'
 #            dependsOn:
 #            - ${{ deployEnv.environment }}_TerraformInitPlan
             pool: ${{ parameters.pool }}
@@ -87,7 +87,7 @@ stages:
                           echo "Present Working directory: $(pwd)"
                           echo "ASDF Install"
                           asdf install
-                          cd ${{ deployEnv.terragruntPath }}
+                          cd "env/${{deployEnv.environment}}/${{ deployEnv.region }}/${{ deployEnv.environmentNumber}}"
                           echo "Running Terragrunt Apply"
                           terragrunt init
                           terragrunt apply -auto-approve

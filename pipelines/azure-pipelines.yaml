@@ -12,12 +12,14 @@ stages:
     parameters:
       deployEnvironments:
         - environment: sandbox
-          azureEnvironment: tg-rg-sandbox
-          terragruntPath: 'env/sandbox/eastus/000'
+          region: eastus
+          environmentNumber: 000
+          azureEnvironment: tg-rg-sandbox-eastus-000
         - environment: qa
-          azureEnvironment: tg-rg-qa
-          terragruntPath: 'env/qa/eastus/000'
+          region: eastus
+          environmentNumber: 000
+          azureEnvironment: tg-rg-qa-eastus-000
           dependsOn:
-            - sandbox_deploy
+            - sandbox_eastus_000_deploy
       subscription: ${{ parameters.serviceConnection }}
       pool: 'container-pool'

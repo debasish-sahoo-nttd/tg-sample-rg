@@ -1,3 +1,4 @@
+# Currently these are subscription IDs. The proposed solution would be to have ADO Service Connections instead.
 prod: "4554e249-e00f-4668-9be3-da31ed200163"
 qa: "4554e249-e00f-4668-9be3-da31ed200163"
 sandbox: "4554e249-e00f-4668-9be3-da31ed200163"
