@@ -1,7 +1,7 @@
-name = "dso-k8s-qa-rg-000"
+name = "dso-k8s-prod-rg-000"
 location="eastus"
 tags = {
-  environment = "sandbox"
+  environment = "prod"
   owner       = "Launch-DSO"
   Purpose     = "K8s Cluster test for DSO"
 }

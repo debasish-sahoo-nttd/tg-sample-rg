@@ -1,0 +1,3 @@
+resource_group_name: "tf-backend-sandbox"
+storage_account_name: "samplergprodtf000"
+container_name: "tfstate"

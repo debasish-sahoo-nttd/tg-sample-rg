@@ -1,4 +1,4 @@
-name = "dso-k8s-rg-000"
+name = "dso-k8s-uat-rg-000"
 location="eastus"
 tags = {
   environment = "sandbox"
