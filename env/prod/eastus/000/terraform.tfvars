@@ -1,5 +1,8 @@
-name = "dso-k8s-prod-rg-000"
-location="eastus"
+environment             = "prod"
+environment_number      = "000"
+logical_product_family  = "dso"
+logical_product_service = "internal"
+location                = "eastus"
 tags = {
   environment = "prod"
   owner       = "Launch-DSO"
