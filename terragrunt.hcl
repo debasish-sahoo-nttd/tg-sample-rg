@@ -1,8 +1,6 @@
 
-# This file has been generated using the launch-cli
 locals {
   # Inputs that can be shared across all the child modules
-  #naming_prefix = "dsok8s"
   accounts = yamldecode(file("accounts.yaml"))
   # Loads the account related details like account name, id etc.
   account_vars = read_terragrunt_config(find_in_parent_folders("account.hcl"))
@@ -13,12 +11,8 @@ locals {
 
   account_name = local.account_vars.locals.account_name
   region       = local.region_vars.locals.region
-  # Subscription id for the account
-  #subscriptions = {"sandbox": "4554e249-e00f-4668-9be3-da31ed200163"}
-  subscription_id = local.accounts[local.account_name]
 
-  # uuid = read_terragrunt_config("${get_terragrunt_dir()}/uuid.hcl").locals.uuid
-  relative_path      = path_relative_to_include()
+  relative_path        = path_relative_to_include()
   environment_instance = basename(local.relative_path)
   backend_rg_name              = local.backend_vars.resource_group_name
   backend_storage_account_name = local.backend_vars.storage_account_name # 24 chars limit
@@ -46,7 +40,6 @@ generate "versions" {
           prevent_deletion_if_contains_resources = false
         }
       }
-      subscription_id = "${local.subscription_id}"
     }
 EOF
 }

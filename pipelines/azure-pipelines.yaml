@@ -1,28 +1,48 @@
-trigger: none
+trigger: 
+  - main
+
+resources:
+  repositories:
+    # This is the repository where ADO pipeline templates and common bash functions are stored
+    - repository: utils
+      type: github
+      name: 'launchbynttdata/lcaf-component-provider_az-pipeline_azdo'
+      ref: feature/1456
+      endpoint: 'launchbynttdata-github-token'
+
+variables:
+  # This is how you set variables for the repositories
+  utils_name: $[ resources.repositories.utils.name ]
+  # Variables for service connection. You cannot dynamically set them in tasks
+  service_connection_uat: "ado-sp"
+  service_connection_qa: "ado-sp"
+  service_connection_prod: "ado-sp"
+  service_connection_sandbox: "ado-sp"
 
 parameters:
-  - name: serviceConnection
+  - name: pool
     type: string
-    default: 'ado-sp'
-
-pool: 'container-pool'
+    default: 'container-pool'
 
 stages:
-  - template: ./templates/stages/terragrunt.yaml
+  - template: /iac/stages/terragrunt.yaml@utils
     parameters:
       deployEnvironments:
         - environment: sandbox
           region: eastus
           environmentNumber: "000"
           azureEnvironment: tg-rg-sandbox-eastus-000
+          serviceConnection: $(service_connection_sandbox)
         - environment: sandbox
           region: eastus
           environmentNumber: "001"
           azureEnvironment: tg-rg-sandbox-eastus-001
+          serviceConnection: $(service_connection_sandbox)
         - environment: qa
           region: eastus
           environmentNumber: "000"
           azureEnvironment: tg-rg-qa-eastus-000
+          serviceConnection: $(service_connection_qa)
           dependsOn:
             - sandbox_eastus_000_deploy
             - sandbox_eastus_001_deploy
@@ -30,13 +50,19 @@ stages:
           region: eastus
           environmentNumber: "000"
           azureEnvironment: tg-rg-uat-eastus-000
+          serviceConnection: $(service_connection_uat)
           dependsOn:
             - qa_eastus_000_deploy
         - environment: prod
           region: eastus
           environmentNumber: "000"
           azureEnvironment: tg-rg-prod-eastus-000
+          serviceConnection: $(service_connection_prod)
           dependsOn:
             - uat_eastus_000_deploy
-      subscription: ${{ parameters.serviceConnection }}
-      pool: 'container-pool'
+      pool: ${{ parameters.pool }}
+      repoCheckoutSteps:
+        - checkout: self
+          path: main
+        - checkout: utils
+          path: utils
